@@ -3,46 +3,55 @@
     <head>
         <meta charset="UTF-8" />
         <title>hello phaser!</title>
-        <script src="phaser.min.js"></script>
+        <script src="phaser.js"></script>
     </head>
     <body>
     <script type="text/javascript">
 
     window.onload = function() {
 
-       var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create });
+      var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, render: render });
 
         function preload() {
 
-            game.load.image('ball', 'phaser.png');
+            game.load.image('ball', 'assets/sprites/pangball.png');
 
         }
-
-        var counter = 0;
-        var text = 0;
 
         function create() {
 
-            game.stage.backgroundColor = '#000fff';
+            game.stage.backgroundColor = '#6688ee';
 
-            text = game.add.text(game.world.centerX, game.world.centerY, 'Counter: 0', { font: "64px Arial", fill: "#ffffff", align: "center" });
-            text.anchor.setTo(0.5, 0.5);
+            game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    //  Here we'll create a basic looped event.
-    //  A looped event is like a repeat event but with no limit, it will literally repeat itself forever, or until you stop it.
+            game.physics.arcade.gravity.y = 150;
 
-    //  The first parameter is how long to wait before the event fires. In this case 1 second (you could pass in 1000 as the value as well.)
-    //  The next two parameters are the function to call ('updateCounter') and the context under which that will happen.
+            //  Here we'll create a basic repeating event.
 
-            game.time.events.loop(Phaser.Timer.SECOND, updateCounter, this);
+            //  The way a repeating event works is that it is placed into the queue once, 
+            //  and when it runs its 'repeatCounter' is reduced by 1 and it's moved back into the queue again.
+            //  To this end the queue will only ever have 1 event actually in it.
+
+            //  The first parameter is how long to wait before the event fires. In this case 2 seconds (you could pass in 2000 as the value as well.)
+            //  The second parameter is how many times the event will run in total. Here we'll run it 10 times.
+            //  The next two parameters are the function to call ('createBall') and the context under which that will happen.
+
+            //  Once the event has been called 10 times it will never be called again.
+
+            game.time.events.repeat(Phaser.Timer.SECOND * 2, 10, createBall, this);
 
         }
 
-        function updateCounter() {
+        function createBall() {
 
-            counter++;
+            //  A bouncey ball sprite just to visually see what's going on.
 
-            text.setText('Counter: ' + counter);
+            var ball = game.add.sprite(game.world.randomX, 0, 'ball');
+
+            game.physics.enable(ball, Phaser.Physics.ARCADE);
+
+            ball.body.bounce.y = 0.9;
+            ball.body.collideWorldBounds = true;
 
         }
 
